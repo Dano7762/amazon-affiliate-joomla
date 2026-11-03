@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" method="upgrade">
+    <name>com_aaj</name>
+    <version>1.0.0</version>
+    <description>AAJ - Amazon Affiliate product boxes, links and lists for Joomla 6.</description>
+    <author>AAJ</author>
+    <authorUrl>https://getaaj.com</authorUrl>
+    <copyright>Copyright (C) AAJ</copyright>
+    <license>GPL v2</license>
+
+    <install><sql>
+        <file driver="mysql" charset="utf8mb4">admin/sql/install.mysql.utf8mb4.sql</file>
+    </sql></install>
+    <uninstall><sql>
+        <file driver="mysql" charset="utf8mb4">admin/sql/uninstall.mysql.utf8mb4.sql</file>
+    </sql></uninstall>
+
+    <files folder="site">
+        <file>aaj.php</file>
+    </files>
+
+    <administration>
+        <menu link="option=com_aaj">AAJ</menu>
+        <submenu>
+            <menu link="option=com_aaj&amp;view=dashboard">Dashboard</menu>
+            <menu link="option=com_aaj&amp;view=products">Products</menu>
+            <menu link="option=com_aaj&amp;view=lists">Lists</menu>
+            <menu link="option=com_aaj&amp;view=settings">Settings</menu>
+        </submenu>
+        <files folder="admin">
+            <folder>controllers</folder>
+            <folder>views</folder>
+            <folder>classes</folder>
+            <folder>sql</folder>
+            <folder>language</folder>
+            <file>aaj.php</file>
+            <file>access.xml</file>
+        </files>
+    </administration>
+
+    <media folder="media" destination="com_aaj">
+        <folder>css</folder>
+        <folder>js</folder>
+        <folder>img</folder>
+    </media>
+
+    <languages folder="admin/language">
+        <language tag="en-GB">en-GB/com_aaj.ini</language>
+        <language tag="en-GB">en-GB/com_aaj.sys.ini</language>
+        <language tag="fr-FR">fr-FR/com_aaj.ini</language>
+        <language tag="fr-FR">fr-FR/com_aaj.sys.ini</language>
+    </languages>
+</extension>

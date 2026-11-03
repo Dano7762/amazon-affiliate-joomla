@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" client="site" method="upgrade">
+    <name>mod_aaj_products</name>
+    <version>1.0.0</version>
+    <description>MOD_AAJ_PRODUCTS_DESCRIPTION</description>
+    <author>AAJ</author>
+    <authorUrl>https://getaaj.com</authorUrl>
+    <copyright>Copyright (C) AAJ</copyright>
+    <license>GPL v2</license>
+
+    <files>
+        <filename module="mod_aaj_products">mod_aaj_products.php</filename>
+        <folder>tmpl</folder>
+    </files>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/mod_aaj_products.ini</language>
+        <language tag="en-GB">en-GB/mod_aaj_products.sys.ini</language>
+        <language tag="fr-FR">fr-FR/mod_aaj_products.ini</language>
+        <language tag="fr-FR">fr-FR/mod_aaj_products.sys.ini</language>
+    </languages>
+</extension>

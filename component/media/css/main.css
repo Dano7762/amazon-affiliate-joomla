@@ -1,0 +1,431 @@
+/**
+ * AAJ for Joomla 6 — Frontend Styles
+ * Adapted from AAJ v1.0.0 WordPress plugin
+ */
+
+/* ============================================================
+   CSS Custom Properties
+   ============================================================ */
+:root {
+    --aaj-color-primary:       #f90;
+    --aaj-color-primary-dark:  #e47911;
+    --aaj-color-secondary:     #232f3e;
+    --aaj-color-text:          #333;
+    --aaj-color-text-muted:    #666;
+    --aaj-color-border:        #e0e0e0;
+    --aaj-color-bg:            #fff;
+    --aaj-color-bg-light:      #f9f9f9;
+    --aaj-color-price:         #b12704;
+    --aaj-color-sale:          #c45500;
+    --aaj-color-saved:         #067d62;
+    --aaj-color-prime:         #00a8e0;
+    --aaj-border-radius:       4px;
+    --aaj-shadow:              0 1px 4px rgba(0,0,0,.12);
+    --aaj-font-size:           14px;
+    --aaj-transition:          0.2s ease;
+}
+
+/* ============================================================
+   Wrapper
+   ============================================================ */
+.aaj {
+    font-family: inherit;
+    font-size: var(--aaj-font-size);
+    color: var(--aaj-color-text);
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Product Card — shared
+   ============================================================ */
+.aaj-product {
+    background: var(--aaj-color-bg);
+    border: 1px solid var(--aaj-color-border);
+    border-radius: var(--aaj-border-radius);
+    box-shadow: var(--aaj-shadow);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 16px;
+    transition: box-shadow var(--aaj-transition);
+}
+.aaj-product:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,.18);
+}
+
+/* ============================================================
+   Horizontal layout
+   ============================================================ */
+.aaj-product--horizontal {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+}
+.aaj-product--horizontal .aaj-product__thumb {
+    flex: 0 0 160px;
+    max-width: 160px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.aaj-product--horizontal .aaj-product__content {
+    flex: 1;
+    padding: 14px 14px 0;
+}
+.aaj-product--horizontal .aaj-product__footer {
+    flex: 0 0 180px;
+    padding: 14px;
+    border-left: 1px solid var(--aaj-color-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* ============================================================
+   Vertical layout
+   ============================================================ */
+.aaj-product--vertical {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    max-width: 280px;
+}
+.aaj-product--vertical .aaj-product__thumb {
+    padding: 16px;
+}
+.aaj-product--vertical .aaj-product__content {
+    padding: 0 16px;
+    flex: 1;
+}
+.aaj-product--vertical .aaj-product__footer {
+    padding: 14px 16px;
+    border-top: 1px solid var(--aaj-color-border);
+}
+
+/* ============================================================
+   List layout (compact)
+   ============================================================ */
+.aaj-product--list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+}
+.aaj-product--list .aaj-product__thumb {
+    flex: 0 0 60px;
+}
+.aaj-product--list .aaj-product__content {
+    flex: 1;
+}
+.aaj-product--list .aaj-product__actions {
+    flex: 0 0 auto;
+}
+
+/* ============================================================
+   Widget small
+   ============================================================ */
+.aaj-product--widget-small {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    margin-bottom: 8px;
+}
+.aaj-product--widget-small .aaj-product__thumb {
+    flex: 0 0 70px;
+}
+.aaj-product--widget-small .aaj-product__content {
+    flex: 1;
+}
+
+/* ============================================================
+   Image
+   ============================================================ */
+.aaj-product__image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+.aaj-product__image-link {
+    display: block;
+}
+
+/* ============================================================
+   Title
+   ============================================================ */
+.aaj-product__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--aaj-color-secondary);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+.aaj-product__title:hover {
+    color: var(--aaj-color-primary-dark);
+    text-decoration: underline;
+}
+
+/* ============================================================
+   Description
+   ============================================================ */
+.aaj-product__description {
+    font-size: 13px;
+    color: var(--aaj-color-text-muted);
+    line-height: 1.5;
+}
+
+/* ============================================================
+   Pricing
+   ============================================================ */
+.aaj-product__pricing {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.aaj-product__price {
+    font-weight: 700;
+}
+.aaj-product__price--current {
+    color: var(--aaj-color-price);
+    font-size: 18px;
+}
+.aaj-product__price--old {
+    color: var(--aaj-color-text-muted);
+    font-size: 13px;
+    font-weight: 400;
+    text-decoration: line-through;
+}
+.aaj-product__price--saved {
+    color: var(--aaj-color-saved);
+    font-size: 13px;
+    font-weight: 600;
+}
+.aaj-product__pricing--inline {
+    flex-wrap: nowrap;
+}
+
+/* ============================================================
+   Rating & Reviews
+   ============================================================ */
+.aaj-product__rating {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.aaj-product__stars {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 14px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cpath d='M10 1l2.4 7.4H20l-6.2 4.5 2.4 7.4L10 16l-6.2 4.3 2.4-7.4L0 8.4h7.6z M30 1l2.4 7.4H40l-6.2 4.5 2.4 7.4L30 16l-6.2 4.3 2.4-7.4L20 8.4h7.6z M50 1l2.4 7.4H60l-6.2 4.5 2.4 7.4L50 16l-6.2 4.3 2.4-7.4L40 8.4h7.6z M70 1l2.4 7.4H80l-6.2 4.5 2.4 7.4L70 16l-6.2 4.3 2.4-7.4L60 8.4h7.6z M90 1l2.4 7.4H100l-6.2 4.5 2.4 7.4L90 16l-6.2 4.3 2.4-7.4L80 8.4h7.6z' fill='%23ddd'/%3E%3C/svg%3E") no-repeat left center/contain;
+}
+.aaj-product__stars--filled {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cpath d='M10 1l2.4 7.4H20l-6.2 4.5 2.4 7.4L10 16l-6.2 4.3 2.4-7.4L0 8.4h7.6z M30 1l2.4 7.4H40l-6.2 4.5 2.4 7.4L30 16l-6.2 4.3 2.4-7.4L20 8.4h7.6z M50 1l2.4 7.4H60l-6.2 4.5 2.4 7.4L50 16l-6.2 4.3 2.4-7.4L40 8.4h7.6z M70 1l2.4 7.4H80l-6.2 4.5 2.4 7.4L70 16l-6.2 4.3 2.4-7.4L60 8.4h7.6z M90 1l2.4 7.4H100l-6.2 4.5 2.4 7.4L90 16l-6.2 4.3 2.4-7.4L80 8.4h7.6z' fill='%23f90'/%3E%3C/svg%3E") no-repeat left center/cover;
+}
+.aaj-product__reviews {
+    font-size: 11px;
+    color: var(--aaj-color-text-muted);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.aaj-product__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--aaj-border-radius);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--aaj-transition), opacity var(--aaj-transition);
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+.aaj-product__btn--amazon.aaj-product__btn--detail {
+    background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+    color: #111;
+    border: 1px solid #a88734;
+}
+.aaj-product__btn--amazon.aaj-product__btn--detail:hover {
+    background: linear-gradient(to bottom, #f5d78e, #eeb933);
+}
+.aaj-product__btn--amazon.aaj-product__btn--cart {
+    background: linear-gradient(to bottom, #f9a12e, #e47911);
+    color: #fff;
+    border: 1px solid #c45500;
+}
+.aaj-product__btn--amazon.aaj-product__btn--cart:hover {
+    background: linear-gradient(to bottom, #f08010, #d46000);
+}
+.aaj-product__btn--standard.aaj-product__btn--detail {
+    background: var(--aaj-color-primary);
+    color: #fff;
+    border: 1px solid var(--aaj-color-primary-dark);
+}
+.aaj-product__btn--standard.aaj-product__btn--cart {
+    background: var(--aaj-color-secondary);
+    color: #fff;
+    border: 1px solid #111;
+}
+.aaj-product__btn-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================================
+   Prime logo
+   ============================================================ */
+.aaj-product__prime {
+    height: 20px;
+    width: auto;
+    vertical-align: middle;
+}
+
+/* ============================================================
+   Ribbons / Badges
+   ============================================================ */
+.aaj-product__ribbon {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    padding: 3px 10px 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #fff;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    z-index: 1;
+}
+.aaj-product__ribbon--bestseller {
+    background: var(--aaj-color-primary-dark);
+}
+.aaj-product__ribbon--sale {
+    background: var(--aaj-color-sale);
+    top: 32px;
+}
+
+/* ============================================================
+   Link shortcode
+   ============================================================ */
+.aaj-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.aaj-link:hover {
+    color: var(--aaj-color-primary-dark);
+}
+.aaj-link__icon {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-right: 3px;
+    opacity: .7;
+}
+
+/* ============================================================
+   Disclaimer
+   ============================================================ */
+.aaj-disclaimer {
+    font-size: 11px;
+    color: var(--aaj-color-text-muted);
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: var(--aaj-color-bg-light);
+    border-left: 3px solid var(--aaj-color-border);
+    border-radius: var(--aaj-border-radius);
+}
+
+/* ============================================================
+   Flag icons (country store indicator)
+   ============================================================ */
+.aaj-icon-flag {
+    display: inline-block;
+    width: 20px;
+    height: 14px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+}
+
+/* ============================================================
+   Unavailability
+   ============================================================ */
+.aaj-product--unavailable {
+    opacity: .75;
+}
+.aaj-product--unavailable .aaj-product__price--current::after {
+    content: ' (indisponible)';
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--aaj-color-text-muted);
+}
+
+/* ============================================================
+   Multiple boxes in a row (grid wrapper)
+   ============================================================ */
+.aaj--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+.aaj--grid .aaj-product--horizontal {
+    flex-direction: column;
+}
+.aaj--grid .aaj-product--horizontal .aaj-product__thumb {
+    max-width: 100%;
+    flex: none;
+}
+.aaj--grid .aaj-product--horizontal .aaj-product__footer {
+    border-left: none;
+    border-top: 1px solid var(--aaj-color-border);
+    flex: none;
+}
+
+/* ============================================================
+   Module wrapper
+   ============================================================ */
+.aaj--module .aaj-product {
+    margin-bottom: 12px;
+}
+.aaj--module .aaj-product:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 640px) {
+    .aaj-product--horizontal {
+        flex-direction: column;
+    }
+    .aaj-product--horizontal .aaj-product__thumb {
+        max-width: 100%;
+        flex: none;
+    }
+    .aaj-product--horizontal .aaj-product__footer {
+        border-left: none;
+        border-top: 1px solid var(--aaj-color-border);
+        flex: none;
+    }
+    .aaj-product__btn {
+        width: 100%;
+    }
+}

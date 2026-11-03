@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="content" method="upgrade">
+    <name>aaj</name>
+    <version>1.0.0</version>
+    <description>PLG_CONTENT_AAJ_DESCRIPTION</description>
+    <author>AAJ</author>
+    <authorUrl>https://getaaj.com</authorUrl>
+    <copyright>Copyright (C) AAJ</copyright>
+    <license>GPL v2</license>
+
+    <files>
+        <filename plugin="aaj">aaj.php</filename>
+        <folder>tmpl</folder>
+    </files>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_content_aaj.ini</language>
+        <language tag="en-GB">en-GB/plg_content_aaj.sys.ini</language>
+        <language tag="fr-FR">fr-FR/plg_content_aaj.ini</language>
+        <language tag="fr-FR">fr-FR/plg_content_aaj.sys.ini</language>
+    </languages>
+</extension>
