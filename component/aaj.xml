@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" method="upgrade">
     <name>com_aaj</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>AAJ - Amazon Affiliate product boxes, links and lists for Joomla 6.</description>
     <author>AAJ</author>
     <authorUrl>https://getaaj.com</authorUrl>

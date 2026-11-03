@@ -211,7 +211,8 @@ class AajProduct
 
     public function isAvailable(): bool
     {
-        return strtolower($this->getAvailability()) === 'now';
+        // 'in_stock' = normalised value; raw Creators types / legacy 'now' may still sit in old cache rows
+        return in_array(strtolower($this->getAvailability()), ['in_stock', 'in_stock_scarce', 'instock', 'now'], true);
     }
 
     public function getCurrency(): string
@@ -316,129 +317,91 @@ class AajProduct
     }
 
     /**
-     * Build product data array from Amazon API response item
+     * Build product data array from a Creators API item (JSON, lowerCamelCase)
      *
-     * @param  array $item  Raw item from PA API response
+     * Field paths follow the official Creators API PHP SDK models (as used by AAWP 5.1.2).
+     *
+     * @param  array $item  Raw item from the Creators API response
      * @return array        Normalised data ready for DB insert/update
      */
     public static function fromApiItem(array $item): array
     {
-        // Supports both Creators API v3 (lowerCamelCase) and PA-API v5 (PascalCase)
-        $asin = $item['asin'] ?? $item['ASIN'] ?? '';
-        $info = $item['itemInfo'] ?? $item['ItemInfo'] ?? [];
-        $images = $item['images'] ?? $item['Images'] ?? [];
+        $info   = $item['itemInfo'] ?? [];
+        $images = $item['images']['primary'] ?? [];
 
-        // Title
-        $title = $info['title']['displayValue']
-              ?? $info['Title']['DisplayValue']
-              ?? '';
-
-        // URL
-        $url = $item['detailPageURL'] ?? $item['DetailPageURL'] ?? '';
-
-        // Features
-        $features = $info['features']['displayValues']
-                 ?? $info['Features']['DisplayValues']
-                 ?? [];
-
-        // Attributes
         $attributes = [];
-        $brand = $info['byLineInfo']['brand']['displayValue']
-              ?? $info['ByLineInfo']['Brand']['DisplayValue']
-              ?? '';
-        if ($brand) $attributes['brand'] = $brand;
+        if ($brand = $info['byLineInfo']['brand']['displayValue'] ?? '') {
+            $attributes['brand'] = $brand;
+        }
 
-        // Binding / product group
-        $binding      = $info['technicalInfo']['formats']['displayValues'][0]
-                     ?? $info['TechnicalInfo']['Formats']['DisplayValues'][0]
-                     ?? '';
-        $productGroup = $info['classifications']['productGroup']['displayValue']
-                     ?? $info['Classifications']['ProductGroup']['DisplayValue']
-                     ?? '';
-
-        // Images — Creators API v3
         $imageIds = [];
-        $primary  = $images['primary'] ?? $images['Primary'] ?? [];
-        foreach (['small' => 'small', 'medium' => 'medium', 'large' => 'large',
-                  'Small' => 'small', 'Medium' => 'medium', 'Large' => 'large'] as $key => $size) {
-            $urlImg = $primary[$key]['url'] ?? $primary[$key]['URL'] ?? '';
-            if ($urlImg) $imageIds[$size] = $urlImg;
+        foreach (['small', 'medium', 'large'] as $size) {
+            if ($urlImg = $images[$size]['url'] ?? '') {
+                $imageIds[$size] = $urlImg;
+            }
         }
 
-        // Offers — Creators API v3 uses offersV2
-        $offersV2 = $item['offersV2'] ?? [];
-        $listing  = $offersV2['listings'][0] ?? [];
+        // Offers: price/savings live under listing.price.{money,savings,savingBasis}
+        $listings = $item['offersV2']['listings'] ?? [];
+        $listing  = $listings[0] ?? [];
+        $price    = $listing['price'] ?? [];
 
-        // Fallback to PA-API v5 style
-        if (empty($listing)) {
-            $offers  = $item['Offers'] ?? [];
-            $listing = $offers['Listings'][0] ?? [];
+        // Availability: first listing that has one (AAWP 5.1.0 fix), IN_STOCK* => in_stock
+        $availability = 'out_of_stock';
+        foreach ($listings as $l) {
+            if (!empty($l['availability']['type'])) {
+                $availability = in_array($l['availability']['type'], ['IN_STOCK', 'IN_STOCK_SCARCE', 'INSTOCKSCARCE', 'INSTOCK'], true)
+                    ? 'in_stock' : 'out_of_stock';
+                break;
+            }
         }
 
-        // availability is an object: {"type":"Now","message":"..."} or {"type":"AvailableShipDate",...}
-        $availObj     = $listing['availability'] ?? $listing['Availability'] ?? [];
-        $availability = $availObj['type'] ?? $availObj['Type'] ?? '';
-
-        $currency   = $listing['price']['currency']
-                   ?? $listing['Price']['Currency']
-                   ?? '';
-        $price      = $listing['price']['amount']
-                   ?? $listing['Price']['Amount']
-                   ?? '';
-
-        // Savings from dealDetails (replaces savingBasis which no longer exists)
-        $dealDetails  = $listing['dealDetails'] ?? $listing['DealDetails'] ?? [];
-        $savings      = $dealDetails['savedAmount']['amount']
-                     ?? $dealDetails['SavedAmount']['Amount']
-                     ?? '';
-        $savingsPct   = $dealDetails['savedPercent']
-                     ?? $dealDetails['SavedPercent']
-                     ?? 0;
-        $savingsBasis = $dealDetails['originalAmount']['amount']
-                     ?? $dealDetails['OriginalAmount']['Amount']
-                     ?? '';
-
-        // Prime / fulfilled not available in this API version — default 0
-        $isPrime     = 0;
-        $isAmzFulfil = 0;
-
-        // Customer reviews from dedicated field
-        $rating  = $item['customerReviews']['starRating']['value']
-                ?? $item['CustomerReviews']['StarRating']['Value']
-                ?? '';
-        $reviews = $item['customerReviews']['count']['value']
-                ?? $item['CustomerReviews']['Count']['Value']
-                ?? 0;
-
-        // Sales rank
-        $nodes     = $item['browseNodeInfo']['browseNodes']
-                  ?? $item['BrowseNodeInfo']['BrowseNodes']
-                  ?? [];
-        $salesRank = $nodes[0]['salesRank'] ?? $nodes[0]['SalesRank'] ?? 0;
+        $nodes = $item['browseNodeInfo']['browseNodes'] ?? [];
+        $now   = date('Y-m-d H:i:s');
 
         return [
             'status'              => 'active',
-            'asin'                => $asin,
-            'title'               => $title,
-            'url'                 => $url,
-            'features'            => json_encode($features),
+            'asin'                => $item['asin'] ?? '',
+            'title'               => $info['title']['displayValue'] ?? '',
+            'url'                 => $item['detailPageURL'] ?? '',
+            'features'            => json_encode($info['features']['displayValues'] ?? []),
             'attributes'          => json_encode($attributes),
-            'binding'             => $binding,
-            'product_group'       => $productGroup,
             'image_ids'           => json_encode($imageIds),
             'availability'        => $availability,
-            'currency'            => $currency,
-            'price'               => $price !== '' ? (string) $price : '',
-            'savings'             => $savings !== '' ? (string) $savings : '',
-            'savings_percentage'  => (float) $savingsPct,
-            'savings_basis'       => $savingsBasis !== '' ? (string) $savingsBasis : '',
-            'salesrank'           => (float) $salesRank,
-            'is_prime'            => $isPrime,
-            'is_amazon_fulfilled' => $isAmzFulfil,
-            'rating'              => (string) $rating,
-            'reviews'             => (int) $reviews,
-            'date_created'        => date('Y-m-d H:i:s'),
-            'date_updated'        => date('Y-m-d H:i:s'),
+            'currency'            => (string) ($price['money']['currency'] ?? ''),
+            'price'               => (string) ($price['money']['amount'] ?? ''),
+            'savings'             => (string) ($price['savings']['money']['amount'] ?? ''),
+            'savings_percentage'  => (float) ($price['savings']['percentage'] ?? 0),
+            'savings_basis'       => (string) ($price['savingBasis']['money']['amount'] ?? ''),
+            'salesrank'           => (float) ($nodes[0]['salesRank'] ?? 0),
+            'is_prime'            => self::detectPrime($listings),
+            'is_amazon_fulfilled' => ($listing['merchantInfo']['id'] ?? '') === 'ATVPDKIKX0DER' ? 1 : 0,
+            'rating'              => (string) ($item['customerReviews']['starRating']['value'] ?? ''),
+            'reviews'             => (int) ($item['customerReviews']['count'] ?? 0),
+            'date_created'        => $now,
+            'date_updated'        => $now,
         ];
+    }
+
+    /**
+     * Prime heuristic from AAWP 5.1.2 (the Creators API has no explicit Prime flag):
+     * buy-box listing that is a Prime deal or is sold by Amazon itself.
+     */
+    private static function detectPrime(array $listings): int
+    {
+        // ponytail: AAWP's merchant list; extend if a marketplace's Amazon seller ID is missing
+        $amazonMerchants = ['ATVPDKIKX0DER', 'A3P5ROKL5A1OLE', 'A3JWKAKR8XB7XF', 'A1X6FK5RDHNB96', 'APJ6JRA9NG5V4',
+            'A1AT7YVPFBWXBL', 'AN1VRQENFRJN5', 'A3DWYIK6Y9EEQB', 'A39IBJ37TRP1C6', 'A21TJRUUN4KGV', 'A13V1IB3VIYZZH'];
+
+        foreach ($listings as $l) {
+            if (empty($l['isBuyBoxWinner'])) {
+                continue;
+            }
+            if (in_array($l['dealDetails']['accessType'] ?? '', ['PRIME_EXCLUSIVE', 'PRIME_EARLY_ACCESS'], true)
+                || in_array($l['merchantInfo']['id'] ?? '', $amazonMerchants, true)) {
+                return 1;
+            }
+        }
+        return 0;
     }
 }
