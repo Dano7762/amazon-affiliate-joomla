@@ -1,0 +1,11 @@
+# Identifiants et secrets
+*credentials*.csv
+.env
+
+# Dossiers de travail locaux
+extracted/
+graphify-out/
+.claude/
+
+# Anciens zips à la racine (les paquets publiés vont dans dist/)
+/*.zip
