@@ -221,7 +221,7 @@ Il affiche `OK` si tout passe.
 
 ## Limites connues
 
-- **Module `mod_aaj_products`** : il s'installe, mais ses gabarits affichent pour l'instant un simple message. Utilisez les shortcodes dans un article ou un module « Contenu personnalisé » (avec le plugin de contenu activé).
+- **Module `mod_aaj_products`** : il s'installe mais n'affiche pas encore de produits. Son manifeste ne déclare aucun paramètre, donc il utilise toujours le gabarit `horizontal`, qui se limite à un message ; les gabarits `list`, `vertical` et `widget-small` sont écrits mais attendent des variables (`$items`, `$renderer`) que le module ne prépare pas. En attendant, utilisez les shortcodes dans un article ou un module « Contenu personnalisé » (avec le plugin de contenu activé).
 - **Réglage « shortcode tag »** : il est enregistré mais pas encore lu par le plugin, qui reconnaît toujours `{aaj ...}`.
 - **Textes de la fiche de repli** : « Voir sur Amazon », « Prix disponible sur Amazon » sont écrits en dur en français dans le plugin.
 - **Rafraîchissement du cache** : uniquement à l'affichage, pas de tâche planifiée (voir [Cache](#cache)).
