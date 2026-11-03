@@ -21,6 +21,12 @@ foreach (glob(__DIR__ . '/controllers/*.php') as $f) {
 }
 
 $app   = Factory::getApplication();
+
+// Legacy entry file: Joomla's dispatcher doesn't check access for us (cf. AAWP 5.1.1 security fix)
+if (!$app->getIdentity()->authorise('core.manage', 'com_aaj')) {
+    throw new \Joomla\CMS\Access\Exception\NotAllowed(\Joomla\CMS\Language\Text::_('JERROR_ALERTNOAUTHOR'), 403);
+}
+
 $input = $app->input;
 $task  = $input->getCmd('task', '');
 $view  = $input->getCmd('view', 'dashboard');

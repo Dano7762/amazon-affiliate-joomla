@@ -9,7 +9,7 @@
           <a href="<?php echo JRoute::_('index.php?option=com_aaj&view=settings'); ?>" class="btn btn-sm btn-warning ms-2">Configure API</a>
         </div>
       <?php else: ?>
-        <div class="alert alert-success">✅ Amazon PA API connected.</div>
+        <div class="alert alert-success">✅ Amazon Creators API connected.</div>
       <?php endif; ?>
     </div>
   </div>

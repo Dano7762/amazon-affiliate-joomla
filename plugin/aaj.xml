@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="content" method="upgrade">
     <name>aaj</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>PLG_CONTENT_AAJ_DESCRIPTION</description>
     <author>AAJ</author>
     <authorUrl>https://getaaj.com</authorUrl>

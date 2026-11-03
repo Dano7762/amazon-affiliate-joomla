@@ -124,6 +124,7 @@ class AmazonApi
         'offersV2.listings.condition',
         'offersV2.listings.dealDetails',
         'offersV2.listings.isBuyBoxWinner',
+        'offersV2.listings.merchantInfo',
         'browseNodeInfo.browseNodes',
         'browseNodeInfo.browseNodes.salesRank',
         'customerReviews.starRating',
@@ -152,7 +153,11 @@ class AmazonApi
     public function setCountry(string $country): void
     {
         $this->marketplace  = self::$countryToMarketplace[$country] ?? 'www.amazon.fr';
-        $this->credVersion  = self::$marketplaceVersionMap[$this->marketplace] ?? '3.2';
+        // Region digit (1=NA, 2=EU, 3=FE) from the marketplace; major version from the
+        // credential type, like AAWP 5.1: LwA client IDs (v3) start with "amzn", Cognito ones (v2) don't.
+        $region            = substr(self::$marketplaceVersionMap[$this->marketplace] ?? '3.2', -1);
+        $major             = str_starts_with($this->clientId, 'amzn') ? '3' : '2';
+        $this->credVersion = $major . '.' . $region;
     }
 
     public function setDebug(bool $debug = true): void { $this->debug = $debug; }
@@ -179,28 +184,34 @@ class AmazonApi
         $resp = $this->request('/catalog/v1/getItems', $payload);
         if (!$resp) return null;
 
+        // Partial errors (e.g. one invalid ASIN in the batch) must not drop the valid items.
         if (isset($resp['errors'])) {
             $this->handleErrors($resp['errors']);
-            return null;
         }
 
         return $resp['itemsResult']['items'] ?? null;
     }
 
     /**
-     * Search items by keywords
+     * Search items by keywords and/or browse node
+     *
+     * @param string $sortBy  Creators API SortBy value, e.g. 'NewestArrivals' ('' = Amazon default)
      */
-    public function searchItems(string $keywords, string $searchIndex = 'All', int $count = 10): ?array
+    public function searchItems(string $keywords, string $searchIndex = 'All', int $count = 10,
+        int $page = 1, string $sortBy = '', string $browseNodeId = ''): ?array
     {
         $payload = [
-            'keywords'    => $keywords,
             'searchIndex' => $searchIndex,
-            'itemCount'   => min($count, 10),
+            'itemCount'   => max(1, min($count, 10)),
             'marketplace' => $this->marketplace,
             'partnerTag'  => $this->partnerTag,
             'partnerType' => 'Associates',
             'resources'   => self::$defaultResources,
         ];
+        if ($keywords !== '')     $payload['keywords']     = $keywords;
+        if ($browseNodeId !== '') $payload['browseNodeId'] = $browseNodeId;
+        if ($page > 1)            $payload['itemPage']     = $page;
+        if ($sortBy !== '')       $payload['sortBy']       = $sortBy;
 
         $resp = $this->request('/catalog/v1/searchItems', $payload);
         if (!$resp) return null;
@@ -209,33 +220,26 @@ class AmazonApi
     }
 
     /**
-     * Get browse nodes (for bestsellers/new releases)
+     * Bestseller / new releases list.
+     *
+     * The Creators API has no top-sellers resource (getBrowseNodes only returns
+     * ancestor/children), so like AAWP 5.1 we use SearchItems: a numeric $category is a
+     * browse node ID, anything else is used as keywords; new releases are sorted by
+     * NewestArrivals. Pages of 10 are fetched with itemPage (not the first page repeated).
      */
-    public function getListItems(string $browseNodeId, string $type = 'BestSellers', int $count = 10): ?array
+    public function getListItems(string $category, string $type = 'BestSellers', int $count = 10): ?array
     {
-        $payload = [
-            'browseNodeId' => $browseNodeId,
-            'marketplace'  => $this->marketplace,
-            'partnerTag'   => $this->partnerTag,
-            'partnerType'  => 'Associates',
-            'resources'    => ['browseNodes.topSellers', 'browseNodes.newReleases'],
-        ];
+        $isNode = ctype_digit($category);
+        $sortBy = $type === 'NewReleases' ? 'NewestArrivals' : '';
+        $items  = [];
 
-        $resp = $this->request('/catalog/v1/getBrowseNodes', $payload);
-        if (!$resp) return null;
-        if (isset($resp['errors'])) { $this->handleErrors($resp['errors']); return null; }
-
-        $nodes = $resp['browseNodesResult']['browseNodes'] ?? [];
-        $asins = [];
-        foreach ($nodes as $node) {
-            $items = $type === 'NewReleases' ? ($node['newReleases'] ?? []) : ($node['topSellers'] ?? []);
-            foreach ($items as $item) {
-                if (!empty($item['asin'])) $asins[] = $item['asin'];
-                if (count($asins) >= $count) break 2;
-            }
+        for ($page = 1; $page <= (int) ceil($count / 10); $page++) {
+            $batch = $this->searchItems($isNode ? '' : $category, 'All', 10, $page, $sortBy, $isNode ? $category : '');
+            if (!$batch) break;
+            array_push($items, ...$batch);
         }
 
-        return $asins ? $this->getItems(array_unique($asins)) : null;
+        return $items ? array_slice($items, 0, $count) : null;
     }
 
     /**

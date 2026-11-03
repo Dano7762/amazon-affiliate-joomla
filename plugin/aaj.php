@@ -120,7 +120,7 @@ class PlgContentAaj extends CMSPlugin
 
     private function renderList(array $atts, string $type): string
     {
-        $category  = trim($atts['category'] ?? '');
+        $category  = trim($atts['category'] ?? $atts['keywords'] ?? ''); // numeric = browse node, else keywords
         $itemCount = min((int)($atts['items'] ?? 10), 10);
         if (!$category) return '';
 

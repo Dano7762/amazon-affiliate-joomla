@@ -1,7 +1,7 @@
 <?php
 /**
  * AAJ Cache Manager
- * Handles product and list cache renewal using Amazon PA API 5
+ * Handles product and list cache renewal using the Amazon Creators API
  *
  * @package Aaj\Component\Aaj
  */
