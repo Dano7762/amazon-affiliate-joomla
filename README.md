@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="component/media/img/aaj-banner.svg" alt="AAJ - Amazon Affiliate Joomla" width="420">
+  <img src="component/media/img/aaj-illustration.png" alt="AAJ - Amazon Affiliate for Joomla" width="320">
 </p>
 
 <p align="center">
