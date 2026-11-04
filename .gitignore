@@ -9,3 +9,6 @@ graphify-out/
 
 # Anciens zips à la racine (les paquets publiés vont dans dist/)
 /*.zip
+
+# Visuels source (haute résolution)
+/Illustration promotionnelle*.png
