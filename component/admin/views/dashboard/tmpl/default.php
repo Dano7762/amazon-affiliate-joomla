@@ -1,6 +1,9 @@
 <?php defined('_JEXEC') or die; ?>
 <div class="container-fluid p-3">
   <div class="row mb-3">
+    <div class="col-auto">
+      <img src="<?php echo \Joomla\CMS\Uri\Uri::root(true); ?>/media/com_aaj/img/aaj-illustration.png" alt="AAJ - Amazon Affiliate for Joomla" height="180">
+    </div>
     <div class="col">
       <h2>AAJ - Amazon Affiliates for Joomla</h2>
       <?php if (!$this->apiReady): ?>
