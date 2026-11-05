@@ -87,7 +87,7 @@ $isOAuth = strncmp($cfg['api_key'] ?? '', 'amzn1.application-oa2-client.', 29) =
         <li>Click <strong>"Create application"</strong> (or use your existing application)</li>
         <li>Copy the <strong>Client ID</strong> (format: <code>amzn1.application-oa2-client.xxx</code>) → paste in <em>Access Key / Client ID</em> below</li>
         <li>Generate and copy the <strong>Client Secret</strong> → paste in <em>Secret Key / Client Secret</em> below</li>
-        <li>Your <strong>Associate Tag</strong> is your affiliate ID (e.g. <code>tdcon-21</code>) — visible in your Associates dashboard</li>
+        <li>Your <strong>Associate Tag</strong> is your affiliate ID (e.g. <code>votretag-21</code>) — visible in your Associates dashboard</li>
       </ol>
       <p style="margin:8px 0 0;font-size:12px;color:var(--color-text-secondary)">
         💡 AAJ auto-detects the key format: if your Access Key starts with <code>amzn1.application-oa2-client.</code> it uses OAuth 2.0 automatically. Otherwise it uses the classic AWS4 signature.
@@ -150,7 +150,7 @@ $isOAuth = strncmp($cfg['api_key'] ?? '', 'amzn1.application-oa2-client.', 29) =
             <input type="text" name="jform[api_tag]" class="form-control"
                    value="<?php echo htmlspecialchars($cfg['api_tag']); ?>"
                    placeholder="yourname-21">
-            <small class="text-muted">Your affiliate tracking ID (e.g. <code>tdcon-21</code>)</small>
+            <small class="text-muted">Your affiliate tracking ID (e.g. <code>votretag-21</code>)</small>
           </div>
         </div>
 
